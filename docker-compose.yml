@@ -3,15 +3,14 @@ version: '3.8'
 services:
   web:
     build: .
+    command: flask run --host=0.0.0.0 --port=5000
     volumes:
-      - ./app:/app
+      - .:/app
     ports:
       - "5000:5000"
     environment:
-      FLASK_APP: app
-      FLASK_ENV: development
-      DATABASE_URL: postgres://postgres:example@db:5432/ecommerce
-      REDIS_URL: redis://redis:6379/0
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
     depends_on:
       - db
       - redis
@@ -20,13 +19,12 @@ services:
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ecommerce
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   redis:
-    image: redis:latest
-
-volumes:
-  postgres_data:
+    image: redis:6
+    ports:
+      - "6379:6379"

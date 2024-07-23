@@ -1,9 +1,19 @@
-# app/routes.py
-from flask import render_template
-from app import app, db
-from app.models import Product
+from flask import Blueprint, jsonify
+from .models import Product
+from . import cache
 
-@app.route('/')
-def index():
+main = Blueprint('main', __name__)
+
+@main.route('/')
+def home():
+    return 'Welcome to the e-commerce site!'
+
+@main.route('/products')
+def get_products():
     products = Product.query.all()
-    return render_template('index.html', products=products)
+    return jsonify([{"id": p.id, "name": p.name, "price": p.price} for p in products])
+
+@main.route('/cache')
+def test_cache():
+    cache.set('test', 'This is a test')
+    return cache.get('test')
