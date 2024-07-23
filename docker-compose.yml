@@ -3,26 +3,23 @@ version: '3.8'
 services:
   web:
     build: .
-    command: flask run --host=0.0.0.0 --port=5000
-    volumes:
-      - .:/app
     ports:
-      - "5000:5000"
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=development
+      - "5000:5000"  # Map port 5000 of the container to port 5000 of the host
     depends_on:
       - db
       - redis
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
 
   db:
     image: postgres:13
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ecommerce
     ports:
       - "5432:5432"
+    environment:
+      POSTGRES_USER: exampleuser
+      POSTGRES_PASSWORD: examplepass
+      POSTGRES_DB: exampledb
 
   redis:
     image: redis:6
