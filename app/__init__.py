@@ -1,18 +1,19 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import redis
+from flask_caching import Cache
 
 db = SQLAlchemy()
-cache = redis.Redis(host='redis', port=6379)
+cache = Cache(config={'CACHE_TYPE': 'simple'})
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@db:5432/ecommerce'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config.from_object('config.Config')
 
     db.init_app(app)
+    cache.init_app(app)
 
-    from .routes import main
-    app.register_blueprint(main)
+    with app.app_context():
+        from . import routes  # Import routes
+        db.create_all()  # Create database tables for our data models
 
     return app
